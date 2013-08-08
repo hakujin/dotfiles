@@ -2,6 +2,7 @@ set nocompatible
 call pathogen#infect()
 
 set shiftwidth=4
+set shiftround
 set tabstop=4
 set history=1000
 set undolevels=1000
@@ -13,11 +14,11 @@ set sidescroll=1
 set scrolloff=3
 set sidescrolloff=10
 set autoread
-set autowrite
 set title
 set backspace=eol,start,indent
 set wildmode=list:longest
 set wildmenu
+set hidden
 set ruler
 set relativenumber
 set ignorecase
@@ -26,7 +27,6 @@ set hlsearch
 set incsearch
 set expandtab
 set laststatus=2
-set shortmess=a
 set showmatch
 set showcmd
 set smarttab
@@ -42,15 +42,19 @@ set lazyredraw
 set ttyfast
 set textwidth=80
 set colorcolumn=+1
-set clipboard=unnamedplus
+set clipboard=unnamed
 set encoding=utf-8
 set t_Co=256
 set background=dark
 
+if has('gui_running')
+    set guioptions=
+endif
+
 filetype plugin on
 filetype indent on
 syntax on
-colorscheme solarized
+colorscheme jellybeans
 
 function! Preserve(command)
     let _s=@/
@@ -65,21 +69,19 @@ function! StripTrailingWhitespace()
     call Preserve("%s/\\s\\+$//e")
 endfunction
 
-function! s:unite_settings()
-    nmap <buffer> <esc> <plug>(unite_exit)
-endfunction
-
-let mapleader = "\<space>"
-let g:necoghc_enable_detailed_browse = 1
-let g:unite_source_history_yank_enable = 1
-let g:unite_enable_start_insert = 1
-let g:hasksyn_dedent_after_return = 1
-let g:hasksyn_dedent_after_catchall_case = 1
-let g:UltiSnipsExpandTrigger = "<c-j>"
-let g:ycm_filetype_blacklist = {'unite':1}
-
-inoremap <C-h> <left>
-inoremap <C-l> <right>
+let mapleader="\<space>"
+let g:necoghc_enable_detailed_browse=1
+let g:hasksyn_dedent_after_return=1
+let g:hasksyn_dedent_after_catchall_case=1
+let g:UltiSnipsExpandTrigger='<c-j>'
+let g:ycm_key_invoke_completion='<leader><tab>'
+let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
+let g:ctrlp_map='<leader>f'
+let g:ctrlp_max_height=20
+let g:bufferline_echo=0
+let g:airline_left_sep=''
+let g:airline_right_sep=''
+let g:airline_theme='jellybeans'
 
 nnoremap K :q<cr>
 nnoremap n nzzzv
@@ -89,8 +91,8 @@ nnoremap L $
 nnoremap / /\v
 vnoremap / /\v
 nnoremap <space> <nop>
-nnoremap <down> :bprev<cr>
-nnoremap <up> :bnext<cr>
+nnoremap <down> :bnext<cr>
+nnoremap <up> :bprev<cr>
 nnoremap <left> :tabprev<cr>
 nnoremap <right> :tabnext<cr>
 nnoremap <C-j> <C-w>j
@@ -100,22 +102,21 @@ nnoremap <C-l> <C-w>l
 nnoremap <bar> <C-w>v<C-w>l
 nnoremap _ <C-w>s<C-w>j
 nnoremap <cr> :set hlsearch! hlsearch?<cr>
-nnoremap <silent> <leader>f :Unite file_rec/async<cr>
-nnoremap <silent> <leader>/ :Unite grep:.<cr>
-nnoremap <silent> <leader>y :Unite history/yank<cr>
-nnoremap <silent> <leader>b :Unite -quick-match buffer<cr>
+nnoremap <silent> <leader>b :CtrlPBuffer<cr>
+nnoremap <silent> <leader>m :CtrlPMRU<cr>
+nnoremap <silent> <leader>u :GundoToggle<cr>
 nnoremap <silent> <leader>gc :Gcommit<cr>
 nnoremap <silent> <leader>gl :Glog<cr>
 nnoremap <silent> <leader>gp :Git push<cr>
 nnoremap <silent> <leader>gs :Gstatus<cr>
 nnoremap <silent> <leader>gw :Gwrite<cr>
 nnoremap <silent> <leader>ht :GhcModType<cr>
-nnoremap <silent> <leader>htc :GhcModTypeClear<cr>
+nnoremap <silent> <leader>hc :GhcModTypeClear<cr>
+nnoremap <silent> <leader>hp :GhcModInfoPreview<cr>
 
 au FileType javascript setlocal shiftwidth=2 tabstop=2
 au FileType haskell setlocal omnifunc=necoghc#omnifunc
-au FileType unite call s:unite_settings()
-au BufWritePre <buffer> call StripTrailingWhitespace()
+au BufWritePre * call StripTrailingWhitespace()
 au BufWritePost *.hs GhcModCheckAndLintAsync
 au WinLeave * set nocursorline
 au WinEnter * set cursorline
